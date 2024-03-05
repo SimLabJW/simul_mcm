@@ -89,6 +89,29 @@ pop순서
 jmp 11 veresion using
 
 
+1. csv파일 headers + ['totalTargets' ,~~] : headers에 들어가야하는게 무엇인가?
+2. 한 행 씩 읽어서 replications의 수만큼 반복(한 행 x replications * 전체 행) 대략 전체 하면 5십만 뭐시기
+3. 한 행 -> senarioRunner 수행
+
+	1. 행 -> list 변환
+	2. targets(len = 8), areas, uuvs, divers 집합 초기화 생성
+	3. id(area, uuv, diveTeam) 클래스 특성 초기화
+	4. 계획 UUVs, Diverts, QRouteLength, RowNames,rowWidths, xHQ, yHQ(.9/2.0) 변수 설정
+	5. UUVsPerRow(UUVs의 개수에 따른 행 에 들어갈 uuvs 갯수), areaLen(area 길이 설정)
+4. uuvs의 행에 따른 갯수와 기존 설정된 넓이(rowWidths) 만큼 area 생성
+5. area의 name에 따른 area 결합(area.builder 수행)
+6. 모든 area 'MTA' 결합
+7. densityNonMins -> densityMines  data.pop 수행
+8. targets 생성( areas.mining 수행 : 랜덤하게 위치 생성하는듯)
+9. uuv 특성 12가지 *5 번 수행을 위한 data pop 수행 및 uuv 생성
+10. uuv 생성에 따른  mission 진행.(uuv.mission, uuv.reacquisitionIdentifry 두개로 거의 진행)
+	1. (self.currentTrack <= totalTracks)일때 reacquistionidentify 로 넘어감
+11. diveteam 특성 4개 pop 중간에 timeNonMine이 끼어있음
+12. diveteam 을 변수 크기만큼 생성
+13. 내부함수 모두 진행 후 target return
+
+14. dive, uuv 알고리즘 사용. 
+
 
 
 
