@@ -62,11 +62,12 @@ def draw_graph():
     global node_graph
     canvas.delete("all")
     
-    node_graph.add_node(node_name = "area_1")
-    node_graph.add_node(node_name = "uun_1")
-    node_graph.add_node(node_name = "dive_1")
+    # node_graph.add_node(node_name = "area_1")
+    # node_graph.add_node(node_name = "uun_1")
+    # node_graph.add_node(node_name = "dive_1")
     # node_graph.add_edge("dive_1", "dive_2")
     
+    node_graph.add_graph(start_node = "dive_1")
     node_graph.add_graph(start_node = "dive_1", end_node = "dive_2")
     
     # node_graph.add_edge(50, 50, 200, 50)

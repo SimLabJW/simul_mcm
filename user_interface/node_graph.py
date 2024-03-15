@@ -6,10 +6,10 @@ class NodeGraph:
         self.node = {}
         
         self.node_radius = 20
-        self.node_distace = 150
+        self.node_distance = 150
         
         self.start_x, self.start_y = 50, 50
-        self.feature_count = {}
+        self.feature_count = []
         
         
         # self.feature_list = ["area", "uun", "dive"]
@@ -29,7 +29,7 @@ class NodeGraph:
         # self.add_edge(50, 50, 125, 150)
         # self.add_edge(200, 50, 125, 150)
 
-    def add_graph(self, start_node, end_node):
+    def add_graph(self, start_node, end_node = None):
         self.calculate_node_coordinate(start_node, end_node)
         # self.node[key] = label    
         # 노드 그리기
@@ -54,25 +54,37 @@ class NodeGraph:
     def del_node(self, x, y, key, label):
         del self.node[key]
         
-    def calculate_node_coordinate(self, start_node, end_node):    
+    def calculate_node_coordinate(self, start_node, end_node = None):    
         start_node_feature = start_node.split('_')[0]
         end_node_feature = end_node.split('_')[0]
+        temp_dict = {}
         
-        if start_node_feature == end_node_feature:
-            
-            if self.feature_count[start_node_feature] == None:
-                self.feature_count[start_node_feature]["x"] = len(self.feature_count)
-                self.feature_count[start_node_feature]["y"] = 0
-                
-            self.node[start_node]["x"] = self.start_x + (self.feature_count[start_node_feature]["x"] * self.node_distace)
-            self.node[start_node]["y"] = self.start_y + (self.feature_count[start_node_feature]["y"] * self.node_distace)
-            
-            self.feature_count[start_node_feature]["y"] += 1
-                
+        # 첫 시작일경우
+        if len(self.feature_count) == 0 and end_node == None:            
+            temp_dict[start_node.split('_')[0]] = 1
+            self.feature_count.append(temp_dict)
         else:
-            # 노드 리스트에 노드가 있는 경우
-            # 없는 경우
+        # 이미 존재하는 노드일경우
+            # 시작 노드와 끝 노드의 feature가 같을 경우 : 상하 연결
+            if start_node_feature == end_node_feature:
+                
+                # 새로운 feature일 경우
+                if end_node_feature not in self.feature_count:
+                                    
+                    temp_dict[end_node_feature] = 0
+                
+                
+            # 시작 노드와 끝 노드의 feature가 다른 경우 : 좌우 연결
+            else:
+                # 노드 리스트에 노드가 있는 경우
+                # 없는 경우
             
             
-    
+    def set_node_coordinate(self, feature):
+        for index, dict in enumerate(self.feature_count):
+            if feature in dict:
+                self.node[feature]["x"] = self.start_x + (index * self.node_distance)
+                self.node[feature]["y"] = self.start_y + (dict[feature] * self.node_distance)
+                
+                self.feature_count[index][feature] += 1
             
