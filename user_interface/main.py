@@ -36,43 +36,12 @@ def weapon_system_on_select(value):
     weapon_system_label.config(text="선택된 값: " + value)
 
 def draw_graph():
-    # 기존 그래프 지우기
-    # canvas.delete("all")
-
-    # # 노드와 간선 추가
-    # nodes = {
-    #     "알고리즘": algorithm_selected_option.get(),
-    #     "전투교리": military_doctrine_selected_option.get(),
-    #     "무기체계": weapon_system_selected_option.get()
-    # }
-
-    # x, y = 100, 200
-    # node_radius = 20
-    # node_distance = 150
-
-    # for node, label in nodes.items():
-    #     canvas.create_oval(x - node_radius, y - node_radius, x + node_radius, y + node_radius, fill="lightblue")
-    #     canvas.create_text(x, y, text=f"{node}\n{label}", justify=tk.CENTER)
-    #     x += node_distance
-
-    # # 간선 그리기
-    # for i in range(len(nodes) - 1):
-    #     canvas.create_line(100 + i * node_distance, 200, 100 + (i + 1) * node_distance, 200, arrow=tk.LAST, fill="black")
     
     global node_graph
     canvas.delete("all")
     
-    # node_graph.add_node(node_name = "area_1")
-    # node_graph.add_node(node_name = "uun_1")
-    # node_graph.add_node(node_name = "dive_1")
-    # node_graph.add_edge("dive_1", "dive_2")
+    # node_graph.add_node("dive_1")
     
-    node_graph.add_graph(start_node = "dive_1")
-    node_graph.add_graph(start_node = "dive_1", end_node = "dive_2")
-    
-    # node_graph.add_edge(50, 50, 200, 50)
-    # node_graph.add_edge(50, 50, 125, 150)
-    # node_graph.add_edge(200, 50, 125, 150)
     
     
 
