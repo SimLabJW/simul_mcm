@@ -1,7 +1,14 @@
 from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
-from navy_area import Area_Model
-from navy_uuv import UUV_Model
-from navy_dive import DIVE_Model
+# from simulation.navy_area import Area_Model
+# from simulation.navy_uuv import UUV_Model
+# from simulation.navy_dive import DIVE_Model
+from simulation.navy_area import area
+from simulation.navy_uuv import uuv
+from simulation.navy_dive import diveTeam
+import numpy as np
+import csv
+
+# from ..node_graph import *
 
 class NODE_Model(BehaviorModelExecutor):
     def __init__(self, instance_time, destruct_time, name, engine_name):
@@ -10,15 +17,44 @@ class NODE_Model(BehaviorModelExecutor):
         self.init_state("Wait")
         self.insert_state("Wait", Infinite)
         self.insert_state("Generate",1)
-    
 
         self.insert_input_port("start")
+
+        #experiment design 
+        document = 'C:\\Users\\USER\\Desktop\\Code\\Python_c\\simul_mcm\\user_interface\\simulation\\file\\NOB_Mixed_512DP_v1.csv' #name of DOE file 
+        # document = 'simul_test.csv.(1)_restored.csv'
+        self.replications = 1 #number of replications per experiment 100
+        #opening an outfile 
+        self.out_file = open("NOB_Mixed_512DP_v1_out.csv", 'w') #opening an output write file 
+        self.owriter = csv.writer(self.out_file, delimiter=',') #creating a csv writer object 
+
+        #Parsing the DOE data 
+        self.in_file = open(document, 'r') #opening the file 
+        self.in_reader = csv.reader(self.in_file) #creating a csv reader object 
+
+        #copying the headers and printing them to the outfile 
+        self.headers = next(self.in_reader) 
+        self.headers = self.headers + ["totalTargets", "numMines", "numNonMines", "numUndetected", 
+                    "numDetected", "numClassified", "numMILCOS", "numNOMBOS", 
+                    "numNotClassified", "numFalseNeg", "numFalsePos", "completionTime"] 
+
+        # print(headers)
+        self.owriter.writerow(self.headers) #writing the headers plus the names of the other 
+        # for row in self.in_reader: #examining each row or disaster from the entire data set 
+        #     temp = run_model(row) #running the scenario 
+        #     self.owriter.writerow(temp) #writing the data to the outfile 
+            # for i in range(self.replications): #replicating each experiment 
+                # temp = run_model(row) #running the scenario 
+                # self.owriter.writerow(temp) #writing the data to the outfile 
+
+
+        # self.in_file.close() 
+        # self.out_file.close()
 
     def ext_trans(self, port, msg):
         
         if port == "start":
-            pass
-
+            self.row_reading()
       
     def output(self): 
 
@@ -26,11 +62,27 @@ class NODE_Model(BehaviorModelExecutor):
             
     def int_trans(self):
         pass
+
+    def row_reading(self):
+        for row in self.in_reader: #examining each row or disaster from the entire data set 
+            temp = run_model.secnarioRunner(self, row) #running the scenario 
+            self.owriter.writerow(temp) #writing the data to the outfile 
     
+        self.in_file.close() 
+        self.out_file.close()
+
 class run_model(NODE_Model):
 
     """The row should be read in from a csv reader with pre-ordered values""" 
-    def __init__(self):
+    def __init__(self,row):
+        pass
+
+        # self.secnarioRunner(row)
+    ############################## 
+    # the scenario 
+    ############################## 
+    def secnarioRunner(self,row): 
+
         #makes a copy of the input data 
         self.data = list(row) #list 
         #pops items from the list to feed into the class instances 
@@ -42,9 +94,9 @@ class run_model(NODE_Model):
         self.divers = {} 
         
         #resets the class id attribute 
-        self.Area_Model.area.id = 0 
-        self.UUV_Model.uuv.id = 0 
-        self.DIVE_Model.diveTeam.id = 0 
+        area.id = 0 
+        uuv.id = 0 
+        diveTeam.id = 0 
         #planning process 
         self.numUUVs = 5 #number of UUVs available (must be divisible by 5) 30
         self.numDivers = 1 #number of dive teams 10
@@ -57,21 +109,17 @@ class run_model(NODE_Model):
         #scenario data 
         self.UUVsPerRow = int(1.0 * self.numUUVs/len(self.rowWidths)) #UUVs per row in the q-route 
         self.areaLen = (1.0 * self.QRouteLength) / self.UUVsPerRow #length of each UUV search area 
-    
-    ############################## 
-    # the scenario 
-    ############################## 
-    def secnarioRunner(self, row): 
+
         #creates each individual search area 
         for i in self.rowWidths: 
             for j in range(self.UUVsPerRow): 
-                Area_Model.areas[Area_Model.area.id] = Area_Model.area(Area_Model.areaLen, i) 
+               self.areas[area.id] = area(self.areaLen, i) 
 
         #combining the areas 
         i = 1 
         for name in self.rowNames: 
             #builds an empty area for each row 
-            self.areas[name] = self.area(length=0, width=0, encompass=set(name)) 
+            self.areas[name] = area(length=0, width=0, encompass=set(name)) 
             
             #adds smaller areas to the end of the row area 
             for j in range(self.UUVsPerRow): 
@@ -79,7 +127,7 @@ class run_model(NODE_Model):
                 i += 1 
 
         #creates the combined mine threat area 
-        self.areas["MTA"] = self.area(0,0) #creates an empty area for t 
+        self.areas["MTA"] = area(0,0) #creates an empty area for t 
         
         #adds rows to the MTA 
         for name in self.rowNames: 
@@ -88,7 +136,7 @@ class run_model(NODE_Model):
         #mining the area 
         densityNonMines = int(self.data.pop()) 
         densityMines = int(self.data.pop()) 
-        targets = self.areas["MTA"].mining(densityMines, densityNonMines, targets) 
+        self.targets = self.areas["MTA"].mining(densityMines, densityNonMines, self.targets) 
         
         # print(f"{densityNonMines} \ {densityMines} \ {targets}")
 
@@ -110,7 +158,7 @@ class run_model(NODE_Model):
             #each UUV in a row is built off of the same inputs 
             #detRate, milcoRate, and nombosRate are random uniforms numbers +/- .01 
             for j in range(self.UUVsPerRow): 
-                self.uuvs[self.uuv.id] = self.uuv(transitSpeed=transitSpeed, deploy=deploy, recover=recover, searchSpeed=searchSpeed, searchTime=searchTime, altitude=altitude, spacing=spacing, passes=passes, sensor=sensor, detRate=np.random.uniform(detRate-.01,detRate+.01), milcoRate=np.random.uniform(milcoRate-.01,milcoRate+.01), nombosRate=np.random.uniform(nombosRate-.01, nombosRate+.01), originX=xHQ, originY=yHQ) 
+                self.uuvs[uuv.id] = uuv(transitSpeed=transitSpeed, deploy=deploy, recover=recover, searchSpeed=searchSpeed, searchTime=searchTime, altitude=altitude, spacing=spacing, passes=passes, sensor=sensor, detRate=np.random.uniform(detRate-.01,detRate+.01), milcoRate=np.random.uniform(milcoRate-.01,milcoRate+.01), nombosRate=np.random.uniform(nombosRate-.01, nombosRate+.01), originX=self.xHQ, originY=self.yHQ) 
 
         #initializes the clock to 0 
         completionTime = 0 
@@ -118,15 +166,14 @@ class run_model(NODE_Model):
         
         #UUVs search their entire areas 
         for UUV in self.uuvs: 
-            
             #detect, classify and localize 
             while self.uuvs[UUV].isActive: 
-                targets = self.uuvs[UUV].mission(self.areas[UUV],targets) 
+                self.targets = self.uuvs[UUV].mission(self.areas[UUV],self.targets) 
 
             test_time +=1
             # print(f"test score {test_time}")
             #reaquire and identify 
-            targets = self.uuvs[UUV].reacquisitionIdentify(self.areas[UUV],targets) 
+            self.targets = self.uuvs[UUV].reacquisitionIdentify(self.areas[UUV],self.targets) 
         
             #waits until all UUV searches and identifications are complete before starting neutr 
             if self.uuvs[UUV].clock > completionTime: 
@@ -144,7 +191,7 @@ class run_model(NODE_Model):
         #builds the dive team object 
         for i in range(self.numDivers): 
             #time for all teams is the completion time of the last UUV search 
-            self.divers[self.diveTeam.id] = self.diveTeam(timeNonMine=timeNonMine, 
+            self.divers[diveTeam.id] = diveTeam(timeNonMine=timeNonMine, 
                 resupply=resupply, timeMine=timeMine, 
                 restTime=restTime, sortieTime=sortieTime, originX=self.xHQ, 
                 originY=self.yHQ, clock=completionTime) 
@@ -154,7 +201,7 @@ class run_model(NODE_Model):
 
             #each team conducts 1 prosecution before looping back through 
             for team in self.divers: 
-                targets = self.divers[team].prosecute(self.areas["MTA"],targets) 
+                self.targets = self.divers[team].prosecute(self.areas["MTA"],self.targets) 
             
                 #last mine neutralized sets the clock 
                 if self.divers[team].clock > completionTime: 
@@ -162,18 +209,18 @@ class run_model(NODE_Model):
 
         
         #calculates output statistics 
-        totalTargets = len(targets[1]) 
-        numMines = sum(targets[2]) 
-        numNonMines = sum(np.logical_not(targets[2])) 
-        numUndetected = sum(np.logical_not(targets[4])) 
-        numDetected = sum(targets[4]) 
-        numClassified = sum(targets[4] * targets[5]) 
+        totalTargets = len(self.targets[1]) 
+        numMines = sum(self.targets[2]) 
+        numNonMines = sum(np.logical_not(self.targets[2])) 
+        numUndetected = sum(np.logical_not(self.targets[4])) 
+        numDetected = sum(self.targets[4]) 
+        numClassified = sum(self.targets[4] * self.targets[5]) 
 
-        numMILCOS = sum(targets[2]*targets[4]*targets[5]) 
-        numNOMBOS = sum(np.logical_not(targets[2])*targets[4]*targets[5]) 
-        numNotClassified = sum(targets[4] * np.logical_not(targets[5])) 
-        numFalseNeg = sum(targets[2] * targets[4]*np.logical_not(targets[5])) 
-        numFalsePos = sum(np.logical_not(targets[2]) * targets[4]*np.logical_not(targets[5])) 
+        numMILCOS = sum(self.targets[2]*self.targets[4]*self.targets[5]) 
+        numNOMBOS = sum(np.logical_not(self.targets[2])*self.targets[4]*self.targets[5]) 
+        numNotClassified = sum(self.targets[4] * np.logical_not(self.targets[5])) 
+        numFalseNeg = sum(self.targets[2] * self.targets[4]*np.logical_not(self.targets[5])) 
+        numFalsePos = sum(np.logical_not(self.targets[2]) * self.targets[4]*np.logical_not(self.targets[5])) 
         
         # print(f"Done result {totalTargets} \ {numMines} \ {numNonMines} \ {numUndetected} \ {numDetected} \ {numClassified} \ {numMILCOS} \ {numNOMBOS} \ {numNotClassified} \ {numFalseNeg} \ {numFalsePos}")
 

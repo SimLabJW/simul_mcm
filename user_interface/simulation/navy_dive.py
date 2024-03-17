@@ -1,4 +1,4 @@
-from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
+# from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
 import numpy as np 
 ############################## 
 # General Functions and Variables 
@@ -12,34 +12,34 @@ def distCalculator(x1, y1, x2, y2):
     return np.sqrt((x1-x2)**2 + (y1-y2)**2) #returns a vector of the distance of the two points 
 
 ############################################
-class DIVE_Model(BehaviorModelExecutor):
-    def __init__(self, instance_time, destruct_time, name, engine_name):
-        BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
+# class DIVE_Model(BehaviorModelExecutor):
+#     def __init__(self, instance_time, destruct_time, name, engine_name):
+#         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
-        self.init_state("Wait")
-        self.insert_state("Wait", Infinite)
-        self.insert_state("Generate",1)
+#         self.init_state("Wait")
+#         self.insert_state("Wait", Infinite)
+#         self.insert_state("Generate",1)
     
 
-        self.insert_input_port("start")
+#         self.insert_input_port("start")
 
-    def ext_trans(self, port, msg):
+#     def ext_trans(self, port, msg):
         
-        if port == "start":
-            pass
+#         if port == "start":
+#             pass
 
       
-    def output(self): 
+#     def output(self): 
 
-       pass
+#        pass
             
-    def int_trans(self):
-        pass
+#     def int_trans(self):
+#         pass
     
 ############################## 
 # EOD Dive Team Class 
 ############################## 
-class diveTeam(DIVE_Model): 
+class diveTeam(): 
  
     id = 0 
  

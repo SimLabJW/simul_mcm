@@ -1,4 +1,4 @@
-from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
+# from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
 import numpy as np 
 import matplotlib.pyplot as plt 
 import csv 
@@ -23,37 +23,37 @@ def listStructure(myList):
 
 
 
-#########################################
-class Area_Model(BehaviorModelExecutor):
-    def __init__(self, instance_time, destruct_time, name, engine_name):
-        BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
+# #########################################
+# class Area_Model(BehaviorModelExecutor):
+#     def __init__(self, instance_time, destruct_time, name, engine_name):
+#         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
-        self.init_state("Wait")
-        self.insert_state("Wait", Infinite)
-        self.insert_state("Generate",1)
+#         self.init_state("Wait")
+#         self.insert_state("Wait", Infinite)
+#         self.insert_state("Generate",1)
     
-        self.insert_input_port("start")
+#         self.insert_input_port("start")
 
 
-    def ext_trans(self, port, msg):
+#     def ext_trans(self, port, msg):
         
-        if port == "start":
-            pass
+#         if port == "start":
+#             pass
 
       
-    def output(self): 
+#     def output(self): 
 
-       pass
+#        pass
             
-    def int_trans(self):
-        pass
+#     def int_trans(self):
+#         pass
     
 
 
 ############################## 
 # Search Area Class 
 ############################## 
-class area(Area_Model): 
+class area(): 
     """Object to build Search Area 
     length: length of the area on the x-axis(float type) 
     width: width of the area on the y-asis (float type) 

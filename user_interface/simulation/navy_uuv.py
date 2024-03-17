@@ -1,4 +1,4 @@
-from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
+# from pyevsim import BehaviorModelExecutor, Infinite, SysMessage
 
 import numpy as np 
 ############################## 
@@ -13,36 +13,36 @@ def distCalculator(x1, y1, x2, y2):
     return np.sqrt((x1-x2)**2 + (y1-y2)**2) #returns a vector of the distance of the two points 
 ####################################
 
-class UUV_Model(BehaviorModelExecutor):
-    def __init__(self, instance_time, destruct_time, name, engine_name):
-        BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
+# class UUV_Model(BehaviorModelExecutor):
+#     def __init__(self, instance_time, destruct_time, name, engine_name):
+#         BehaviorModelExecutor.__init__(self, instance_time, destruct_time, name, engine_name)
         
-        self.init_state("Wait")
-        self.insert_state("Wait", Infinite)
-        self.insert_state("Generate",1)
+#         self.init_state("Wait")
+#         self.insert_state("Wait", Infinite)
+#         self.insert_state("Generate",1)
     
 
-        self.insert_input_port("start")
+#         self.insert_input_port("start")
 
-    def ext_trans(self, port, msg):
+#     def ext_trans(self, port, msg):
         
-        if port == "start":
-            pass
+#         if port == "start":
+#             pass
 
       
-    def output(self): 
+#     def output(self): 
 
-       pass
+#        pass
             
-    def int_trans(self):
-        pass
+#     def int_trans(self):
+#         pass
     
 ############################## 
 # 
 # UUV Class 
 # 
 ############################## 
-class uuv(UUV_Model): 
+class uuv(): 
     """transitSpeed (kts) 
     deploy (min) 
     recover (min) 
@@ -95,6 +95,7 @@ class uuv(UUV_Model):
     def probability(self, area, targets, ability): 
         yCoord = area.refY + self.currentTrack * self.spacing #determines y coordinate based on current search track 
 
+        # print(targets[1])
          # Add a print statement to check the values of targets[1] and targets[3]
         # print(f"Value of targets[1]: {targets[1]}, Value of targets[3]: {targets[3]}")
         y = targets[1] #array of y coordinate of the target 
@@ -210,7 +211,7 @@ class uuv(UUV_Model):
         
  
     def reacquisitionIdentify(self, area, targets): 
-        
+        print(targets[0])
         #determines if contacts are in the search area 
         inRangeX = np.logical_and(targets[0] > area.refX, targets[0] < area.refX + area.length) 
         inRangeY = np.logical_and(targets[1] > area.refY, targets[1] < area.refY + area.width) 

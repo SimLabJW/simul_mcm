@@ -2,7 +2,8 @@ from pyevsim import BehaviorModelExecutor, SystemSimulator, Infinite
 # from navy_area import Area_Model
 # from navy_uuv import UUV_Model
 # from navy_dive import DIVE_Model
-from navy_node_manager import NODE_Model
+from simulation.navy_node_manager import NODE_Model
+# from navy_graph import GUI_Model
 
 class Navy_manager():
     def __init__(self) -> None:
@@ -18,11 +19,13 @@ class Navy_manager():
         # UUV_m = UUV_Model(0, Infinite, "UUV_m", "OBSERVER")
         # Dive_m = DIVE_Model(0, Infinite, "Dive_m", "OBSERVER")
         Node_m = NODE_Model(0, Infinite, "Node_m", "OBSERVER")
+        # GUI_m = GUI_Model(0, Infinite, "GUI_m", "OBSERVER")
 
         # self.navy_simulation_model.register_entity(Area_m)
         # self.navy_simulation_model.register_entity(UUV_m)
         # self.navy_simulation_model.register_entity(Dive_m)
         self.navy_simulation_model.register_entity(Node_m)
+        # self.navy_simulation_model.register_entity(GUI_m)
   
         # simulation 진행 커리큘럼
         # self.navy_simulation_model.coupling_relation(None, "start", Area_m, "start")
@@ -36,8 +39,9 @@ class Navy_manager():
         # 진행 종료
         # self.navy_simulation_model.coupling_relation(Dive_m, "start", Node_m, "start")
         self.navy_simulation_model.coupling_relation(None, "start", Node_m, "start")
+        # self.navy_simulation_model.coupling_relation(GUI_m, "st_b", Node_m, "start")
 
-
+        print("Start simulation")
         self.start()
 
 

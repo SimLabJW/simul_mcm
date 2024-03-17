@@ -7,10 +7,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+class start_simulator():
 
-def main() -> None:
-    print("Start simulator")
-    start_simulation_manager = Navy_manager().start()
+    def start() -> None:
+        print("Start simulator")
+        start_simulation_manager = Navy_manager().start()
 
-if __name__ == '__main__':
-    main()
+start_simulator.start()

@@ -1,15 +1,53 @@
 import tkinter as tk
 from node_graph import NodeGraph
-from simulation.navy_simulator import *
+import socket
+import threading
+import json
 
 sim_flag = False
-
+server_socket = None
 """
 nodes = {
     "노드 이름" : {x : 100, y : 140}
 }
 links = [["노드 이름", "노드 이름"], ["노드 이름", "노드 이름"]]
 """
+
+
+def start_server():
+    global server_socket
+    # 서버 주소와 포트
+    SERVER_HOST = '127.0.0.1'
+    SERVER_PORT = 12345
+
+    # 소켓 생성
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # 주소와 포트에 바인드
+    server_socket.bind((SERVER_HOST, SERVER_PORT))
+
+    # 클라이언트의 연결을 기다림
+    server_socket.listen(1)
+    print(f"[*] 서버가 {SERVER_HOST}:{SERVER_PORT} 에서 클라이언트를 기다리고 있습니다.")
+
+    # 클라이언트 연결 받기
+    client_socket, client_address = server_socket.accept()
+    print(f"[*] {client_address} 로부터 연결이 수락되었습니다.")
+
+    # 클라이언트로부터 메시지 수신 및 출력
+    while True:
+        message = client_socket.recv(1024).decode()
+        if not message:
+            break
+        print(f"[받은 메시지] {message}")
+
+        # JSON 형식의 데이터를 파이썬 리스트로 변환
+        data_list = json.loads(message)
+        node_graph.add_node(data_list[0] + data_list[1])
+        node_graph.set_next_node()
+
+    # 연결 종료
+    client_socket.close()
 
 
 def sim_start_event():
@@ -19,8 +57,12 @@ def sim_start_event():
         start_button.config(text="Running...")
         # 노드 그래프 그림
         draw_graph()
-        start_simulator.start()
+        # start_simulator.start()
         sim_flag = True
+
+        # 통신을 시작하는 쓰레드 시작
+        server_thread = threading.Thread(target=start_server)
+        server_thread.start()
     else:
         root_label.config(text="시뮬레이션 상태: 정지")
         start_button.config(text="Start")
@@ -42,14 +84,21 @@ def draw_graph():
     global node_graph
     canvas.delete("all")
     
-    # node_graph.add_node("dive_1")
     
     
+def on_closing():
+    # 창이 닫힐 때 서버 소켓 닫기
+    if server_socket:
+        server_socket.close()
+    root.destroy()
     
 
 # 기본 창 생성
 root = tk.Tk()
 root.title("진우의 신나는 시뮬레이터 GUI")
+
+# 종료 이벤트 핸들러 등록
+root.protocol("WM_DELETE_WINDOW", on_closing)
 
 # 드롭다운 메뉴의 옵션들
 algorithm_options = ["알고리즘 1", "알고리즘 2", "알고리즘 3", "알고리즘 4"]
@@ -104,3 +153,5 @@ node_graph = NodeGraph(canvas)
 
 # 창 실행
 root.mainloop()
+
+
