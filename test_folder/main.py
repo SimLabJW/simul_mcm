@@ -3,6 +3,7 @@ from node_graph import NodeGraph
 import socket
 import threading
 import json
+import os
 
 sim_flag = False
 server_socket = None
@@ -44,7 +45,7 @@ def start_server():
         # JSON 형식의 데이터를 파이썬 리스트로 변환
         data_list = json.loads(message)
         node_graph.add_node(data_list[0] + data_list[1])
-        node_graph.set_next_node()
+
 
     # 연결 종료
     client_socket.close()
@@ -63,6 +64,11 @@ def sim_start_event():
         # 통신을 시작하는 쓰레드 시작
         server_thread = threading.Thread(target=start_server)
         server_thread.start()
+
+        # 통신을 시작하는 쓰레드 시작
+        simulator_thread = threading.Thread(target=start_simulator)
+        simulator_thread.start()
+
     else:
         root_label.config(text="시뮬레이션 상태: 정지")
         start_button.config(text="Start")
@@ -84,15 +90,14 @@ def draw_graph():
     global node_graph
     canvas.delete("all")
     
-    
-    
 def on_closing():
     # 창이 닫힐 때 서버 소켓 닫기
     if server_socket:
         server_socket.close()
     root.destroy()
     
-
+def start_simulator():
+    os.system("python navy_simulator.py")
 # 기본 창 생성
 root = tk.Tk()
 root.title("진우의 신나는 시뮬레이터 GUI")

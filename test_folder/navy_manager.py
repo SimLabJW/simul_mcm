@@ -47,7 +47,9 @@ class Navy_manager():
         self.navy_simulation_model.coupling_relation(Dive_m, "dive_state", Node_m, "start")
         self.navy_simulation_model.coupling_relation(Node_m, "next_d", Dive_m, "next")
 
-        self.navy_simulation_model.coupling_relation(Node_m, "Done_d", Dive_m, "stop")
+        # self.navy_simulation_model.coupling_relation(Node_m, "Done_d", Dive_m, "stop")
+        self.navy_simulation_model.coupling_relation(Node_m, "Done_d", None, "stop")
+
 
 
     def start(self) -> None:
