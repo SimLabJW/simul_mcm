@@ -52,6 +52,7 @@ class NodeGraph:
             
         node_info[node] = node_detail
         self.node_list.append(node_info)
+        print(self.node_list)
         self.draw_graph(node_info)
         
         
@@ -104,6 +105,23 @@ class NodeGraph:
             
             
             self.canvas.create_line(start_node_x, start_node_y, end_node_x, end_node_y, arrow=tk.LAST, fill="black")    
+        
+        elif self.flag_new_feature:
+            for node_info in self.node_list:
+                if self.pre_node + "_1" == str(list(node_info.keys())[0]):
+                    print(f"새로운 특성 발견 : {(self.pre_node + '_1')} , {str(list(node_info.keys())[0])}")
+                    end_node_info = self.node_list[len(self.node_list) - 1]
+                    end_node_name = list(end_node_info.keys())[0]
+                    
+                    start_node_name = list(node_info.keys())[0]                    
+                    
+                    start_node_x = node_info[start_node_name]["x"]
+                    start_node_y = node_info[start_node_name]["y"]
+                    
+                    end_node_x = end_node_info[end_node_name]["x"]
+                    end_node_y = end_node_info[end_node_name]["y"]   
+                    
+                    self.canvas.create_line(start_node_x, start_node_y, end_node_x, end_node_y, arrow=tk.LAST, fill="black")        
         
         self.flag_new_feature = False
             
