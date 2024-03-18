@@ -10,7 +10,11 @@ class NodeGraph:
         
         self.start_x, self.start_y = 50, 50
         self.count_x, self.count_y = 0, 0
+        
         self.flag_reverse = False
+        self.flag_new_feature = False
+        
+        self.pre_node = ""
         
         # self.feature_list = ["area", "uun", "dive"]
         
@@ -34,13 +38,33 @@ class NodeGraph:
 
     def add_node(self, node):
         node_info = {}
-        node_detail = self.node_coordinate()
+        
+        # 새로운 feature의 노드일 경우
+        if self.check_new_feature(node):
+            self.flag_new_feature = True
+            self.flag_reverse = False
+            node_detail = self.new_node_coordinate()
+            
+        # 아닐 경우
+        else:
+            node_detail = self.next_node_coordinate()
+            
         node_info[node] = node_detail
         self.node_list.append(node_info)
         self.draw_graph(node_info)
         
         
-    def node_coordinate(self) -> dict :
+    def new_node_coordinate(self) -> dict:
+        self.count_x += 1
+        self.count_y = 0
+        
+        node_coord = {}
+        node_coord["x"] = self.start_x + (self.count_x * self.node_distance)
+        node_coord["y"] = self.start_y + (self.count_y * self.node_distance)        
+        
+        return node_coord
+        
+    def next_node_coordinate(self) -> dict :
         node_coord = {}
         node_coord["x"] = self.start_x + (self.count_x * self.node_distance)
         node_coord["y"] = self.start_y + (self.count_y * self.node_distance)
@@ -63,7 +87,7 @@ class NodeGraph:
     def add_edge(self):
         # 간선 그리기
         
-        if len(self.node_list) > 1:
+        if len(self.node_list) > 1 and not self.flag_new_feature:
             start_node_info = self.node_list[len(self.node_list) - 2]
             end_node_info = self.node_list[len(self.node_list) - 1]
             
@@ -78,17 +102,18 @@ class NodeGraph:
             
             
             self.canvas.create_line(start_node_x, start_node_y, end_node_x, end_node_y, arrow=tk.LAST, fill="black")    
+        
+        self.flag_new_feature = False
             
-    
     def set_next_node(self):
         if self.flag_reverse:
             self.count_y -= 1
         
         else:
             self.count_y += 1
-            
         
     def check_canvas(self):
+        
         if self.count_y == 2 and not self.flag_reverse:
             self.flag_reverse = True
             self.count_x += 1
@@ -99,6 +124,18 @@ class NodeGraph:
             
         else:
             self.set_next_node()
+            
+    def check_new_feature(self, node) -> bool:
+        node_feature = node.split('_')[0]
+        
+        if node_feature == self.pre_node:
+            self.pre_node = node_feature
+            return False
+        
+        else:
+            self.pre_node = node_feature
+            return True
+    
         
     # def add_graph(self, start_node, end_node = None):
     #     self.calculate_node_coordinate(start_node, end_node)
