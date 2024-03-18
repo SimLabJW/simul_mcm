@@ -44,7 +44,9 @@ def start_server():
 
         # JSON 형식의 데이터를 파이썬 리스트로 변환
         data_list = json.loads(message)
-        node_graph.add_node(data_list[0] + data_list[1])
+        node = data_list[0] + "_" + data_list[1]
+        print("Node 정보 : ", node)
+        node_graph.add_node(node)
 
 
     # 연결 종료
