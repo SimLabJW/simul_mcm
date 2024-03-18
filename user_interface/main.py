@@ -40,7 +40,16 @@ def draw_graph():
     global node_graph
     canvas.delete("all")
     
-    # node_graph.add_node("dive_1")
+    node_graph.add_node("dive_1")
+    node_graph.add_node("dive_2")
+    node_graph.add_node("dive_3")
+    node_graph.add_node("dive_4")
+    node_graph.add_node("dive_5")
+    node_graph.add_node("dive_111")
+    node_graph.add_node("dive_123")
+    node_graph.add_node("dive_14")
+    node_graph.add_node("dive_11")
+    
     
     
     
